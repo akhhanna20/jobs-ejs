@@ -1,10 +1,22 @@
 <h1>The Jobs EJS Application</h1>
-<hr />
+<% if (user) { %>
+   <p>User <%= user.name %> is logged on.</p>
+   <form method="POST" action="/sessions/logoff">
+   <button>Logoff</button>
+   </form>
+<% } %>
 <% if (errors) {
     errors.forEach((err) => { %>
-      <div>Error: <%= err %></div>
-  <% }) } %>
+      <div>
+        Error: <%= err %>
+      </div>
+    <% })
+  } %>
   <% if (info) {
     info.forEach((msg) => { %>
-      <div>Info: <%= msg %></div>
-  <% }) } %>
+      <div>
+        Info: <%= msg %>
+      </div>
+    <% })
+  } %>
+<hr />
