@@ -6,6 +6,12 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const passport = require('passport');
 const passportInit = require('./passport/passportInit');
 
+const secretWordRouter = require('./routes/secretWord');
+const auth = require('./middleware/auth');
+
+const cookieParser = require('cookie-parser');
+const csrf = require('host-csrf');
+
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -37,6 +43,26 @@ if (app.get('env') === 'production') {
 
 app.use(session(sessionParms));
 
+app.use(cookieParser(process.env.SESSION_SECRET));
+app.use(express.urlencoded({ extended: false }));
+
+// CSRF protection setup
+let csrf_development_mode = true;
+
+if (app.get('env') === 'production') {
+  csrf_development_mode = false;
+  app.set('trust proxy', 1);
+}
+const csrf_options = {
+  protected_operations: ['PATCH', 'PUT', 'POST', 'DELETE'],
+  protected_content_types: [
+    'application/json',
+    'application/x-www-form-urlencoded',
+  ],
+  development_mode: csrf_development_mode,
+};
+const csrf_middleware = csrf(csrf_options); //initialise and return middlware
+app.use(csrf_middleware);
 // Passport.js initialization for authentication
 passportInit();
 app.use(passport.initialize());
@@ -51,9 +77,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/sessions', require('./routes/sessionRoutes'));
-
-const auth = require('./middleware/auth');
-const secretWordRouter = require('./routes/secretWord');
 
 // Protect the /secretWord route with the auth middleware
 app.use('/secretWord', auth, secretWordRouter);
