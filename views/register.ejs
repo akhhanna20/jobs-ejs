@@ -1,4 +1,13 @@
 <%- include("partials/head.ejs") %> <%- include("partials/header.ejs") %>
+
+<% if (errors && errors.length > 0) { %>
+  <div class="alert alert-danger">
+    <% errors.forEach(function(error) { %>
+      <p><%= error %></p>
+    <% }); %>
+  </div>
+<% } %>
+
 <form method="POST">
   <div>
     <label name="name">Enter your name:</label>
