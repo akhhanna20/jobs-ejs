@@ -3,7 +3,8 @@ const Job = require('../models/Job');
 const getAllJobs = async (req, res) => {
   try {
     const jobs = await Job.find({ createdBy: req.user._id }).sort('createdAt');
-    res.render('jobs', { jobs });
+    //res.render('jobs', { jobs });
+    res.render('jobs', { jobs, messages: req.flash() });
   } catch (error) {
     console.log(error);
     req.flash('error', 'Error fetching jobs');
